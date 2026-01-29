@@ -190,12 +190,48 @@ def detect_disease(image_path):
         ]
     }
 
+
+# Try to load Local LLM (Flan-T5) if transformers is available
+local_llm = None
+local_tokenizer = None
+if CLIP_AVAILABLE:
+    try:
+        from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
+        print("Loading Local LLM (Flan-T5)...")
+        # flan-t5-small is lightweight (~300MB)
+        local_tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-small")
+        local_llm = AutoModelForSeq2SeqLM.from_pretrained("google/flan-t5-small")
+        print("Local LLM loaded successfully.")
+    except Exception as e:
+        print(f"Failed to load Local LLM: {e}")
+
+# ... (Existing detections functions) ...
+
+def get_chat_response_local(query):
+    """
+    Uses local Flan-T5 model to answer questions.
+    """
+    if not local_llm or not local_tokenizer:
+        return None
+        
+    try:
+        # Prompt engineering for Flan-T5
+        # It handles "instructions" well.
+        prompt = f"Answer this question about farming: {query}"
+        
+        inputs = local_tokenizer(prompt, return_tensors="pt")
+        outputs = local_llm.generate(**inputs, max_length=150, do_sample=True, temperature=0.7)
+        response = local_tokenizer.decode(outputs[0], skip_special_tokens=True)
+        return response
+    except Exception as e:
+        print(f"Local LLM Error: {e}")
+        return None
+
 def get_chat_response_simple(query):
-    # Logic remains similar, could also be upgraded to Gemini if desired
-    # For now, keeping it simple or using Gemini if key available
     api_key = os.getenv("GEMINI_API_KEY")
     query_lower = query.lower()
 
+    # 1. Try Gemini (Best Quality)
     if GEMINI_AVAILABLE and api_key:
         try:
             genai.configure(api_key=api_key)
@@ -226,13 +262,19 @@ def get_chat_response_simple(query):
             response = model_chat.generate_content(system_prompt.format(query=query))
             return response.text
         except Exception as e:
-             print(f"Chat Error: {e}")
+             print(f"Gemini Chat Error: {e}")
              pass
 
-    # Simple fallback (Rule-based)
+    # 2. Try Local LLM (Good Quality, Offline)
+    print("Falling back to Local LLM...")
+    local_response = get_chat_response_local(query)
+    if local_response:
+        return local_response
+
+    # 3. Simple fallback (Rule-based)
     if "disease" in query_lower:
-        return "I can help identify diseases. Please upload a photo."
+        return "I can help identify diseases using the 'Disease Detection' feature. Please upload a photo there."
     elif "farm" in query_lower or "crop" in query_lower or "plant" in query_lower:
-        return "I am here to help with farming. Please ask specifically about your crops."
+        return "I am here to help with farming. Please ask specifically about your crops, like 'How to grow tomatoes'."
     
-    return "I am KrishiMitra, your farming assistant. I only answer questions about agriculture and plant diseases."
+    return "I am KrishiMitra, your farming assistant. I can help with agriculture and plant diseases. Please ask me a question!"
