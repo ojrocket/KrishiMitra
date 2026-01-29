@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KrishiMitraAI - Smart Farmer Advisory System</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <i class="fas fa-seedling"></i>
+                <span>KrishiMitraAI</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#voice-assistant">Voice Assistant</a></li>
+                <li><a href="#disease-detection">Disease Detection</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Smart Farming with AI</h1>
+            <p>Get expert agricultural advice in your native language through our AI-powered voice assistant</p>
+            <div class="hero-buttons">
+                <button class="btn-primary" onclick="startVoiceCall()">
+                    <i class="fas fa-microphone"></i> Start Voice Call
+                </button>
+                <button class="btn-secondary" onclick="scrollToFeatures()">
+                    Learn More
+                </button>
+            </div>
+        </div>
+        <div class="language-selector">
+            <select id="languageSelect">
+                <option value="en">English</option>
+                <option value="hi">हिंदी (Hindi)</option>
+                <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+                <option value="te">తెలుగు (Telugu)</option>
+                <option value="ta">தமிழ் (Tamil)</option>
+            </select>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2>Our AI-Powered Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-phone-alt"></i>
+                    <h3>Voice Call Assistant</h3>
+                    <p>Talk to our AI in your native language for instant farming advice</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-bug"></i>
+                    <h3>Disease Detection</h3>
+                    <p>Upload plant images to identify diseases and get treatment recommendations</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-chart-line"></i>
+                    <h3>Crop Growth Tips</h3>
+                    <p>Get personalized suggestions to improve your crop yield</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-cloud-sun"></i>
+                    <h3>Weather Advisory</h3>
+                    <p>Receive weather-based farming recommendations</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Voice Assistant Section -->
+    <section id="voice-assistant" class="voice-assistant">
+        <div class="container">
+            <h2>AI Voice Assistant</h2>
+            <div class="voice-interface">
+                <div class="voice-avatar">
+                    <div class="pulse-ring"></div>
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="voice-controls">
+                    <button id="voiceBtn" class="voice-btn" onclick="toggleVoiceCall()">
+                        <i class="fas fa-microphone"></i>
+                        <span>Click to Talk</span>
+                    </button>
+                    <div class="voice-status" id="voiceStatus">Ready to help you</div>
+                    <div style="margin-top: 10px;">
+                        <label for="voiceSelect" style="font-size: 14px; margin-right: 5px;">Voice:</label>
+                        <select id="voiceSelect" style="padding: 5px; border-radius: 3px; border: 1px solid #ccc;">
+                            <option value="">Auto-select</option>
+                        </select>
+                    </div>
+                    <button onclick="testVoiceFeatures()"
+                        style="margin-top: 10px; padding: 5px 10px; background: #2196F3; color: white; border: none; border-radius: 3px;">
+                        Test Voice Features
+                    </button>
+                    <button onclick="listAvailableVoices()"
+                        style="margin-top: 10px; margin-left: 5px; padding: 5px 10px; background: #FF9800; color: white; border: none; border-radius: 3px;">
+                        List Voices
+                    </button>
+                </div>
+                <div class="conversation-display" id="conversationDisplay">
+                    <div class="message ai-message">
+                        <i class="fas fa-robot"></i>
+                        <span>Hello! I'm your AI farming assistant. How can I help you today?</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Disease Detection Section -->
+    <section id="disease-detection" class="disease-detection">
+        <div class="container">
+            <h2>Plant Disease Detection</h2>
+            <div class="detection-interface">
+                <div class="upload-area" id="uploadArea">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Upload or drag an image of your plant</p>
+                    <input type="file" id="imageUpload" accept="image/*" onchange="analyzeImage()">
+                    <button class="upload-btn" onclick="document.getElementById('imageUpload').click()">
+                        Choose Image
+                    </button>
+                </div>
+                <div class="analysis-result" id="analysisResult" style="display: none;">
+                    <div class="result-image">
+                        <img id="uploadedImage" src="" alt="Uploaded plant image">
+                    </div>
+                    <div class="result-details">
+                        <h3 id="diseaseTitle">Analysis Result</h3>
+                        <div class="confidence-bar">
+                            <span>Confidence: </span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="confidenceBar"></div>
+                            </div>
+                            <span id="confidenceText">0%</span>
+                        </div>
+                        <div class="treatment-advice" id="treatmentAdvice">
+                            <h4>Treatment Recommendations:</h4>
+                            <ul id="treatmentList"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Crop Growth Tips Section -->
+    <section class="crop-tips">
+        <div class="container">
+            <h2>Smart Crop Growth Suggestions</h2>
+            <div class="tips-grid">
+                <div class="tip-card">
+                    <i class="fas fa-tint"></i>
+                    <h3>Water Management</h3>
+                    <p>Optimize irrigation based on soil moisture and weather conditions</p>
+                </div>
+                <div class="tip-card">
+                    <i class="fas fa-leaf"></i>
+                    <h3>Nutrient Planning</h3>
+                    <p>Get soil-specific fertilizer recommendations for maximum yield</p>
+                </div>
+                <div class="tip-card">
+                    <i class="fas fa-calendar-alt"></i>
+                    <h3>Planting Schedule</h3>
+                    <p>Find the optimal planting and harvesting times for your crops</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>KrishiMitraAI</h3>
+                    <p>Empowering farmers with AI technology</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact</h3>
+                    <p>Email: nsmixd14jashwanth@gmail.com</p>
+                    <p>Phone: +91-9392986415</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Languages Supported</h3>
+                    <p>English, Hindi, Punjabi, Telugu, Tamil</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+
+            </div>
+        </div>
+    </footer>
+
+    <!-- Chatbot Widget -->
+    <div class="chatbot-container">
+        <div id="chatWindow" class="chat-window" style="display: none;">
+            <div class="chat-header">
+                <i class="fas fa-robot"></i>
+                <span>KrishiMitra Assistant</span>
+            </div>
+            <div id="chatMessages" class="chat-messages">
+                <div class="chat-message bot-message">
+                    <span>Namaste! Ask me anything about your crops or upload a photo to identify diseases.</span>
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="Ask a question..." onkeypress="handleChatInput(event)">
+                <button class="chat-send-btn" onclick="sendChatMessage()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+        <button id="chatToggleBtn" class="chat-toggle-btn" onclick="toggleChat()">
+            <i class="fas fa-comment-dots"></i>
+        </button>
+    </div>
+
+    <script src="voicecall.js"></script>
+    <script src="main.js"></script>
+    <script src="disease-detection.js"></script>
+    <script src="chatbot.js"></script>
+</body>
+
+</html>
